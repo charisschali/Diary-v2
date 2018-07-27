@@ -13,10 +13,10 @@ def createdb_con(config=None):
     # password = os.getenv('DB_PASSWORD')
 
     return psycopg2.connect(
-            database = d16ahbkavtut1r,
-            user = rhcyveatamglmc,
-            password =2ff3d580447cde84cbcc8c56046809fb73eaffaf7e2eec6e1b0130b8aeb68d99,
-            host = ec2-23-23-242-163.compute-1.amazonaws.com
+            database = 'd16ahbkavtut1r',
+            user = 'rhcyveatamglmc',
+            password ='2ff3d580447cde84cbcc8c56046809fb73eaffaf7e2eec6e1b0130b8aeb68d99',
+            host = 'ec2-23-23-242-163.compute-1.amazonaws.com'
      )
 #This method creates  entries table
 def create_entries_table(cursor):
