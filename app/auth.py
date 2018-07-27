@@ -41,7 +41,7 @@ class SingUp(Resource):
         else:
             new_user = (username,email,password)
             User().save(new_user)
-            return{"Server Response":"Account created"},200
+            return{"Server Response":" Hello {}, your account was created successfully".format(username).title()},200
 
 class Login(Resource):
     """
@@ -63,11 +63,11 @@ class Login(Resource):
         password = data['password']
         db_email = User().match_email(email)
         if not db_email:
-            return{"Server Response":"User does not exist"},400
-        if password == User().get_pwd_by_email(email):
+            return {"Server Response":"User with email:'{}' does not exist".format(email)},400
+        if User().verify_password(email,password):
             user_id = User().get_id_by_email(email)
             exp = timedelta(minutes=1440)
             access_token = create_access_token(identity=user_id,expires_delta=exp)
-            return {"Welcome":{"Your access token is:":access_token}},200
-        return {"Server Response":"Incorrect password"},400
+            return {"Welcome to your personal diary, your access token is":access_token},200
+        return {"Server Response":"Your password was Incorrect, please double check it."},400
 

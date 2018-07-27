@@ -29,17 +29,17 @@ class Entries(Resource):
         """
         data = self.parser.parse_args()
         user_id = get_jwt_identity()[0]
-        print(user_id)
         date = self.date
         title = data['title']
         content = data['content']
         entry = (user_id,date,title,content)
-        Entry().save(entry)
-        try:
-            Entry().save(entry)
-            return {'id':user_id,'date':date,'title':title,'content':content},201
-        except:
-            return{'Server Response':"An error occured try again"},500
+        if Entry().verify_title(title,user_id) == True:
+            return{'Server Response':"Title already exist, use a different one."},400
+        else:
+            try:
+                return{"This entry was added to your diary":Entry().save(entry)},201
+            except:
+                return{'Server Response':"An error occured try again"},500
 
     @staticmethod
     @jwt_required
@@ -49,10 +49,15 @@ class Entries(Resource):
         Get all entries of a user
         URL path: mydiary/v1/entries
         """
-        user_id =get_jwt_identity()[0]
+        user_id = get_jwt_identity()[0]
         entries = Entry().get_all_entries(user_id)
-        response = {'All Entries':entries}
-        return response, 200
+        if len(entries) == 0:
+            return {"Server Response":"Your diary is empty"},200
+        else:
+            total_entries = str(len(entries))
+            msg = "You currently have "+total_entries+" diary entries."
+            response = {msg:entries}
+            return response, 200
 
 class EntryList(Resource):
     """
@@ -111,6 +116,7 @@ class EntryList(Resource):
         Modifies an entry by it's Id
         URL path: mydiary/v1/entries/<int:entryId>
         """
+        user_id = get_jwt_identity()[0]
         data = self.parser.parse_args()
         title = data['title']
         content = data['content']
@@ -122,8 +128,11 @@ class EntryList(Resource):
             entry_Date = Entry().entry_date(entryId)[0]
             today_date = date.today().strftime("%d-%m-%Y")
             if today_date == entry_Date:
-                Entry().update_entry(updated_data,entryId)
-                return{"Server Response":"Entry Updated successfully"}, 200
+                if Entry().verify_title(title,user_id) == True:
+                    return{'Server Response':"Title already exist, use a different one."},400
+                else:
+                    Entry().update_entry(updated_data,entryId)
+                    return{"Server Response":"Entry Updated successfully"}, 200
             else:
                 return{'Server Response':'Entry cannot be updated because it was not created today'}, 400
 

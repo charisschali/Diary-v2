@@ -2,10 +2,11 @@ import jwt,psycopg2
 from app.create_database import createdb_con
 from werkzeug.security import generate_password_hash,check_password_hash
 
+
 conn = createdb_con()
 cur = conn.cursor()
 
-class BaseClass():
+class ClearClass():
     """This class has methods for dropping tables
     and deleting table data
     """
@@ -25,10 +26,20 @@ class User():
     methods for fetching user's data.
     """
     def save(self,user):
+        hash_pwd = generate_password_hash(user[2])
         """ saves user's details to database
         """
-        cur.execute("insert into users (username,email,password) values(%s,%s,%s)",user)
+        cur.execute("insert into users (username,email,password) values(%s,%s,%s)",(user[0],user[1],hash_pwd))
         conn.commit()
+
+    def verify_password(self,email,password):
+        cur.execute("select password from users where email = %s",(email,))
+        fetch_data = cur.fetchone()
+        hashed_pwd = (fetch_data)[0]
+        if check_password_hash(hashed_pwd,password):
+            return True
+        else:
+            return False
 
     @classmethod
     def get_user_by_email(cls,email):
@@ -51,7 +62,10 @@ class User():
         try:
             cur.execute("select email from users where email = %s",(email,))
             fetch_data = cur.fetchone()
-            return list(fetch_data)[0]
+            if fetch_data:
+                return list(fetch_data)[0]
+            else:
+                return False
         except Exception as e:
             return e
 
@@ -85,7 +99,7 @@ class Entry():
         """
         This method fetches user entry by its id
         """
-        query="select entries.id,date,title,content from entries WHERE user_id={} and id={}".format(user_id,entryId)
+        query = "select entries.id,date,title,content from entries WHERE user_id={} and id={}".format(user_id,entryId)
         cur.execute(query)
         user_entries = cur.fetchall()
         return user_entries
@@ -97,17 +111,20 @@ class Entry():
         """
         cur.execute("insert into entries (user_id,date,title,content) values(%s,%s,%s,%s)",entry)
         conn.commit()
+        query = "select entries.id,date,title,content from entries WHERE user_id = {} and title = '{}'".format(entry[0],entry[2])
+        cur.execute(query)
+        entry = cur.fetchone()
+        return {'id':entry[0],"date":entry[1],"title":entry[2],"content":entry[3]}
     @staticmethod
     def get_entry_id(entryId):
         """
         This method fetches entry id
         """
-        query="select entries.id from entries WHERE entries.id={}".format(entryId)
+        query = "select entries.id from entries WHERE entries.id={}".format(entryId)
         cur.execute(query)
         entry_id = cur.fetchone()
         return entry_id
         conn.close()
-
 
     def delete_entry(self,entryId):
         """
@@ -130,7 +147,7 @@ class Entry():
         """
         This method fetches entries of a user
         """
-        query="select entries.id,date,title,content from  entries inner join users on  entries.user_id=users.id WHERE users.id={}".format(user_id)
+        query = "select entries.id,date,title,content from  entries inner join users on  entries.user_id=users.id WHERE users.id={}".format(user_id)
         cur.execute(query)
         user_entries = cur.fetchall()
         return user_entries
@@ -141,7 +158,14 @@ class Entry():
         """
         Returns the date when an entry was created
         """
-        query="select date from entries WHERE id={} ".format(entryId)
+        query = "select date from entries WHERE id={} ".format(entryId)
         cur.execute(query)
         date = cur.fetchone()
         return date
+    def verify_title(self,title,user_id):
+        query ="select entries.title from entries where user_id = {} and title = '{}' ".format(user_id,title)
+        cur.execute(query)
+        title = cur.fetchone()
+        if title:
+            return True
+        return False

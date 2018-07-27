@@ -3,20 +3,20 @@ import os, psycopg2
 def createdb_con(config=None):
     #creating database connection with the right database based on configs
     if config=='testing':
-        database_url = os.getenv('testdb')
+        db_name = os.getenv('TEST_DB')
     else:
-        database_url = os.getenv('DATABASE_URL')
+        database_name = os.getenv('DB_NAME')
 
-    # host = os.getenv('DB_HOST')
-    # database_name = os.getenv('DB_NAME')
-    # user = os.getenv('DB_USERNAME')
-    # password = os.getenv('DB_PASSWORD')
+    host = os.getenv('DB_HOST')
+    database_name = os.getenv('DB_NAME')
+    user = os.getenv('DB_USERNAME')
+    password = os.getenv('DB_PASSWORD')
 
     return psycopg2.connect(
-            database = 'd16ahbkavtut1r',
-            user = 'rhcyveatamglmc',
-            password ='2ff3d580447cde84cbcc8c56046809fb73eaffaf7e2eec6e1b0130b8aeb68d99',
-            host = 'ec2-23-23-242-163.compute-1.amazonaws.com'
+            database = database_name,
+            user = user,
+            password =password,
+            host = host
      )
 #This method creates  entries table
 def create_entries_table(cursor):
