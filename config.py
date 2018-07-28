@@ -13,6 +13,7 @@ class Config(object):
     database_name = os.getenv('DB_NAME')
     user = os.getenv('DB_USERNAME')
     password = os.getenv('DB_PASSWORD')
+    PROPAGATE_EXCEPTIONS = True
 
 
 
