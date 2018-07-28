@@ -6,13 +6,18 @@ install:
   - pip install -r requirements.txt
   - pip install pytest-cov
   - pip install coveralls
+services:
+  - postgresql
+before_script:
+  - psql -c 'create database diarydb;' -U postgres    
 env:
   -export SECRET_KEY="!@#(#_jjdril^&@efr8599"
-  -export FLASK_CONFIG="production"
-  -export DB_HOST="ec2-23-23-242-163.compute-1.amazonaws.com"
-  -export DB_NAME="d16ahbkavtut1r"
-  -export DB_USERNAME="rhcyveatamglmc"
-  -export DB_PASSWORD="2ff3d580447cde84cbcc8c56046809fb73eaffaf7e2eec6e1b0130b8aeb68d99"
+  -export FLASK_CONFIG="testing"
+  -export DB_HOST="localhost"
+  -export DB_NAME="diarydb"
+  -export TEST_DB="testdb"
+  -export DB_USERNAME="chariss"
+  -export DB_PASSWORD="pooler32"
   -export JWT_SECRET_KEY="(#_jjdril^&@e"
 script:
   - pytest --cov=Diary-v2/
