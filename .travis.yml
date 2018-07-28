@@ -1,0 +1,20 @@
+language: python
+python:
+  - "3.4"
+cache: pip
+install:
+  - pip install -r requirements.txt
+  - pip install pytest-cov
+  - pip install coveralls
+env:
+  -export SECRET_KEY="!@#(#_jjdril^&@efr8599"
+  -export FLASK_CONFIG="production"
+  -export DB_HOST="ec2-23-23-242-163.compute-1.amazonaws.com"
+  -export DB_NAME="d16ahbkavtut1r"
+  -export DB_USERNAME="rhcyveatamglmc"
+  -export DB_PASSWORD="2ff3d580447cde84cbcc8c56046809fb73eaffaf7e2eec6e1b0130b8aeb68d99"
+  -export JWT_SECRET_KEY="(#_jjdril^&@e"
+script:
+  - pytest --cov=Diary-v2/
+after_success:
+  - coveralls

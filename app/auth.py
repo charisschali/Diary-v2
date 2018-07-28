@@ -1,8 +1,6 @@
-from datetime import datetime
 from datetime import timedelta
-from flask import Flask
 from flask_restful import Resource,reqparse
-from flask_jwt_extended import (create_access_token, get_jwt_identity)
+from flask_jwt_extended import create_access_token
 from app.models import User
 
 class SingUp(Resource):
