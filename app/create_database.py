@@ -3,12 +3,12 @@ import os, psycopg2
 def createdb_con(config=None):
     #creating database connection with the right database based on configs
     if config=='testing':
-        db_name = os.getenv('TEST_DB')
+        database_name = os.getenv('TEST_DB')
     else:
         database_name = os.getenv('DB_NAME')
 
     host = os.getenv('DB_HOST')
-    database_name = os.getenv('DB_NAME')
+    # database_name = os.getenv('DB_NAME')
     user = os.getenv('DB_USERNAME')
     password = os.getenv('DB_PASSWORD')
 
@@ -25,7 +25,7 @@ def create_entries_table(cursor):
             user_id INTEGER NOT NULL,
             date VARCHAR(20),
             title VARCHAR(255) NOT NULL,
-            content VARCHAR(255) NOT NULL,
+            content TEXT NOT NULL,
             PRIMARY KEY (user_id,id),
             FOREIGN KEY (user_id)
             REFERENCES users (id)
@@ -54,9 +54,6 @@ def main(config=None):
         create_entries_table(cursor)
 
         conn.commit()
-
-
-
 
     print('Two tables created successfully')
 
