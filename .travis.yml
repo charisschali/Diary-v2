@@ -1,24 +1,19 @@
+
 language: python
+
 python:
-  - "3.5"
-cache: pip
+  - "3.5.2"
+
+before_script:
+  - createdb diarydb;   
+
 install:
   - pip install -r requirements.txt
-  - pip install pytest-cov
-  - pip install coveralls
-services:
-  - postgresql
-before_script:
-  - psql -c 'create database diarydb;' -U postgres
-  - export JWT_SECRET_KEY="(#_jjdril^&@e"
-  - export SECRET_KEY="!@#(#_jjdril^&@efr8599"
-  - export FLASK_CONFIG="testing"
-  - export DB_HOST="localhost"
-  - export DB_NAME="diarydb"
-  - export DB_USERNAME="chariss"
-  - export DB_PASSWORD="pooler32"
 
 script:
-  - pytest --cov=tests/
+  - python -m pytest --cov-report term-missing --cov=app
+
 after_success:
   - coveralls
+
+cache: pip
