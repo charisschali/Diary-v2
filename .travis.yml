@@ -1,6 +1,6 @@
 language: python
 python:
-  - "3.4"
+  - "3.5"
 cache: pip
 install:
   - pip install -r requirements.txt
@@ -19,6 +19,6 @@ env:
   -export DB_PASSWORD="pooler32"
   -export JWT_SECRET_KEY="(#_jjdril^&@e"
 script:
-  - pytest --cov
+  - pytest --cov=Diary-v2/
 after_success:
   - coveralls
