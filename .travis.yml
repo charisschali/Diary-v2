@@ -5,14 +5,15 @@ python:
   - "3.5.2"
 
 before_script:
-  - createdb diarydb;   
+  - createdb diarydb;
 
 install:
   - pip install -r requirements.txt
+  - pip install pytest-cov
+  - pip install coveralls
 
 script:
-  - python -m pytest --cov-report term-missing --cov=app
-
+  - pytest --cov=app/
 after_success:
   - coveralls
 
