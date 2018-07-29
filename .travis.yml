@@ -19,6 +19,6 @@ env:
   -export DB_PASSWORD="pooler32"
   -export JWT_SECRET_KEY="(#_jjdril^&@e"
 script:
-  - pytest --cov=app/
+  - pytest --cov=tests/
 after_success:
   - coveralls
