@@ -1,7 +1,8 @@
 from flask import Flask
 from config import app_config
 from flask_restful import Api,Resource
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import (JWTManager, jwt_required, create_access_token,
+    get_jwt_identity)
 from app.auth import SingUp,Login
 from app.entries import Entries,EntryList
 
