@@ -12,14 +12,20 @@ class ClearClass():
     @staticmethod
     def clear_table():
         query = "TRUNCATE entries,users"
-        cur.execute(query)
-        conn.commit()
+        try:
+            cur.execute(query)
+            conn.commit()
+        except:
+            conn.rollback()
 
     @staticmethod
     def drop_tables():
         query = "DROP TABLE entries,users"
-        cur.execute(query)
-        conn.commit()
+        try:
+            cur.execute(query)
+            conn.commit()
+        except:
+            conn.rollback()
     @staticmethod
     def create_table():
         query = """ CREATE TABLE entries (
@@ -55,19 +61,24 @@ class User():
     # saves user's details to database
     def save(user):
         hash_pwd = generate_password_hash(user[2])
-        cur.execute("insert into users (username,email,password) values(%s,%s,%s)",(user[0],user[1],hash_pwd))
-        conn.commit()
+        try:
+            cur.execute("insert into users (username,email,password) values(%s,%s,%s)",(user[0],user[1],hash_pwd))
+            conn.commit()
+        except:
+            conn.rollback()
 
     @staticmethod
     def verify_password(email,password):
         cur.execute("select password from users where email = %s",(email,))
-        fetch_data = cur.fetchone()
-        hashed_pwd = (fetch_data)[0]
-        if check_password_hash(hashed_pwd,password):
-            return True
-        else:
-            return False
-
+        try:
+            fetch_data = cur.fetchone()
+            hashed_pwd = (fetch_data)[0]
+            if check_password_hash(hashed_pwd,password):
+                return True
+            else:
+                return False
+        except:
+            conn.rollback()
     @classmethod
     def get_user_by_email(cls,email):
         """
@@ -110,9 +121,12 @@ class User():
 
     @staticmethod
     def get_id_by_email(email):
-        cur.execute("select users.id from users where email = %s",(email,))
-        user_id = cur.fetchone()
-        return user_id
+        try:
+            cur.execute("select users.id from users where email = %s",(email,))
+            user_id = cur.fetchone()
+            return user_id
+        except:
+            conn.rollback()
 
 class Entry():
     """
@@ -127,32 +141,40 @@ class Entry():
         This method fetches user entry by its id
         """
         query = "select entries.id,date,title,content from entries WHERE user_id={} and id={}".format(user_id,entryId)
-        cur.execute(query)
-        user_entries = cur.fetchall()
-        return user_entries
+        try:
+            cur.execute(query)
+            user_entries = cur.fetchall()
+            return user_entries
+        except:
+            conn.rollback()
 
     @staticmethod
     def save(entry):
         """
         saves an entry to the database
         """
-        cur.execute("insert into entries (user_id,date,title,content) values(%s,%s,%s,%s)",entry)
-        conn.commit()
-        query = "select entries.id,date,title,content from entries WHERE user_id = {} and title = '{}'".format(entry[0],entry[2])
-        cur.execute(query)
-        entry = cur.fetchone()
-        return {'id':entry[0],"date":entry[1],"title":entry[2],"content":entry[3]}
-
+        try:
+            cur.execute("insert into entries (user_id,date,title,content) values(%s,%s,%s,%s)",entry)
+            conn.commit()
+            query = "select entries.id,date,title,content from entries WHERE user_id = {} and title = '{}'".format(entry[0],entry[2])
+            cur.execute(query)
+            entry = cur.fetchone()
+            return {'id':entry[0],"date":entry[1],"title":entry[2],"content":entry[3]}
+        except:
+            conn.rollback()
     @staticmethod
     def get_entry_id(entryId):
         """
         This method fetches entry id
         """
         query = "select entries.id from entries WHERE entries.id={}".format(entryId)
-        cur.execute(query)
-        entry_id = cur.fetchone()
-        return entry_id
-        conn.close()
+        try:
+            cur.execute(query)
+            entry_id = cur.fetchone()
+            return entry_id
+            conn.close()
+        except:
+            conn.rollback()
 
     @staticmethod
     def delete_entry(entryId):
@@ -160,8 +182,11 @@ class Entry():
         deletes an entry
         """
         query = "DELETE FROM entries WHERE entries.id={}".format(entryId)
-        cur.execute(query)
-        conn.commit()
+        try:
+            cur.execute(query)
+            conn.commit()
+        except:
+            conn.rollback()
 
     @staticmethod
     def update_entry(new_entry,entryId):
@@ -169,19 +194,24 @@ class Entry():
         updates a user an entry if it exists with new data
         """
         query = "UPDATE entries SET title = '{}',content= '{}'  WHERE entries.id = {}".format(new_entry[0],new_entry[1],entryId)
-        cur.execute(query)
-        conn.commit()
-
+        try:
+            cur.execute(query)
+            conn.commit()
+        except:
+            conn.rollback()
     @staticmethod
     def get_all_entries(user_id):
         """
         This method fetches entries of a user
         """
         query = "select entries.id,date,title,content from  entries inner join users on  entries.user_id=users.id WHERE users.id={}".format(user_id)
-        cur.execute(query)
-        user_entries = cur.fetchall()
-        return user_entries
-        conn.close()
+        try:
+            cur.execute(query)
+            user_entries = cur.fetchall()
+            return user_entries
+            conn.close()
+        except:
+            conn.rollback()
 
     @staticmethod
     def entry_date(entryId):
@@ -189,15 +219,21 @@ class Entry():
         Returns the date when an entry was created
         """
         query = "select date from entries WHERE id={} ".format(entryId)
-        cur.execute(query)
-        date = cur.fetchone()
-        return date
+        try:
+            cur.execute(query)
+            date = cur.fetchone()
+            return date
+        except:
+            conn.rollback()
 
     @staticmethod
     def verify_title(title,user_id):
         query ="select entries.title from entries where user_id = {} and title = '{}' ".format(user_id,title)
-        cur.execute(query)
-        title = cur.fetchone()
-        if title:
-            return True
-        return False
+        try:
+            cur.execute(query)
+            title = cur.fetchone()
+            if title:
+                return True
+            return False
+        except:
+            conn.rollback()

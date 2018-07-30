@@ -9,7 +9,7 @@ def create_app(config_name):
     app = Flask(__name__)
     app.config.from_object(app_config[config_name])
     api = Api(app)
-    jwt = JWTManager(app)
+    JWTManager(app)
     api.add_resource(SingUp,'/mydiary/v1/auth/register')
     api.add_resource(Login,'/mydiary/v1/auth/login')
     api.add_resource(Entries, '/mydiary/v1/entries')

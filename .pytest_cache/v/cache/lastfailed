@@ -1,6 +1,0 @@
-{
-  "tests/test_api_models.py": true,
-  "tests/test_app_configs.py": true,
-  "tests/test_auth_resources.py": true,
-  "tests/test_entry_resources.py": true
-}
