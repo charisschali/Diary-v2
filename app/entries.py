@@ -3,6 +3,7 @@ from flask_restful import Resource,reqparse
 from flask_jwt_extended import (get_jwt_identity,jwt_required)
 from app.models import Entry
 
+
 class Entries(Resource):
     """
     This resource class will have two methods,a post method that creates a new entry and get method that

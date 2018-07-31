@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,render_template
 from config import app_config
 from flask_restful import Api,Resource
 from flask_jwt_extended import JWTManager
@@ -14,5 +14,9 @@ def create_app(config_name):
     api.add_resource(Login,'/mydiary/v1/auth/login')
     api.add_resource(Entries, '/mydiary/v1/entries')
     api.add_resource(EntryList, '/mydiary/v1/entries/<int:entryId>')
+
+    @app.route("/")
+    def index():
+        return render_template("index.html")
 
     return app
