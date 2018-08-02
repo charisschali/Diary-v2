@@ -5,6 +5,7 @@ class Config(object):
     Common configurations
     """
     DEBUG = True
+    PROPAGATE_EXCEPTIONS = True
     JSONIFY_PRETTYPRINT_REGULAR =True
     SECRET = os.getenv('SECRET')
     SECRET_KEY = os.getenv('SECRET_KEY ')
@@ -13,7 +14,7 @@ class Config(object):
     database_name = os.getenv('DB_NAME')
     user = os.getenv('DB_USERNAME')
     password = os.getenv('DB_PASSWORD')
-    PROPAGATE_EXCEPTIONS = True
+   
 
 
 
