@@ -12,6 +12,7 @@ from app.entries import Entries, EntryList
 def create_app(config_name):
     "This function creates the app and returns it"
     app = Flask(__name__)
+    app.config['PROPAGATE_EXCEPTIONS'] = True
     CORS(app)
     app.config.from_object(app_config[config_name])
     api = Api(app)
