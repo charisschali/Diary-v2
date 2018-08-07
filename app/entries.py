@@ -37,12 +37,12 @@ class Entries(Resource):
         content = data['content']
         entry = (user_id, date, title, content)
         if Entry().verify_title(title, user_id) == True:
-            return{'Server Response':"Title already exist, use a different one."}, 400
+            return{'message':"Title already exist, use a different one."}, 400
         else:
             try:
-                return{"This entry was added to your diary":Entry().save(entry)}, 201
+                return{'message':"successfully added","This entry was added to your diary":Entry().save(entry)}, 201
             except:
-                return{'Server Response':"An error occured try again"}, 500
+                return{'message':"An error occured try again"}, 500
 
     @staticmethod
     @jwt_required
@@ -55,7 +55,7 @@ class Entries(Resource):
         user_id = get_jwt_identity()[0]
         entries = Entry().get_all_entries(user_id)
         if len(entries) == 0:
-            return {"Server Response":"Your diary is empty"}, 200
+            return {"message":"Your diary is empty"}, 200
         else:
             total_entries = str(len(entries))
             all_user_entries = []
@@ -66,8 +66,7 @@ class Entries(Resource):
                 single_entry["title"] = user_entries[2]
                 single_entry["content"] = user_entries[3]
                 all_user_entries.append(single_entry)
-                msg = "You currently have "+total_entries+" diary entries."
-                response = {msg:all_user_entries}
+                response = {"all_entries":all_user_entries}
             return response, 200
 
 class EntryList(Resource):
@@ -120,7 +119,7 @@ class EntryList(Resource):
                 Entry().delete_entry(entryId)
             return {'message':'Your entry was successfully deleted'}, 200
         except:
-            return{"Server Response":"An internal error occured"}, 500
+            return{"message":"An internal error occured"}, 500
 
     @jwt_required
     def put(self, entryId):
@@ -142,12 +141,12 @@ class EntryList(Resource):
             today_date = date.today().strftime("%d-%m-%Y")
             if today_date == entry_Date:
                 if Entry().verify_title(title, user_id) == True:
-                    return{'Server Response':"Title already exist, use a different one."}, 400
+                    return{'message':"Title already exist, use a different one."}, 400
                 else:
                     Entry().update_entry(updated_data, entryId)
-                    return{"Server Response":"Entry Updated successfully"}, 200
+                    return{"message":"Entry Updated successfully"}, 200
             else:
-                return{'Server Response':'Entry cannot be updated \
+                return{'message':'Entry cannot be updated \
                  because it was not created today'}, 400
 
-        return{"Server Response":"An error ocurred while processing your request"}, 500
+        return{"message":"An error ocurred while processing your request"}, 500
