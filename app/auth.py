@@ -42,7 +42,7 @@ class SingUp(Resource):
         else:
             new_user = (username, email, password)
             User().save(new_user)
-            return{"message":" Hello {}, your account was created".format(username).title()}, 201
+            return{"message":"Your Account was created"}, 201
 
 class Login(Resource):
     """
