@@ -1,20 +1,15 @@
-
 language: python
-
 python:
-  - "3.5.2"
-
-before_script:
-  - createdb diarydb;
-
+  - "3.6"
+cache: pip
 install:
   - pip install -r requirements.txt
-  - pip install pytest-cov
-  - pip install coveralls
-
+before_script:
+  - psql -c 'create database database_name;' -U postgres
+  - psql -c "create user db_user with password 'password' createdb;" -U postgres
+  - python app/create_database.py
 script:
-  - pytest --cov=app/
+  pytest --cov=app/
 after_success:
   - coveralls
-
-cache: pip
+  - codeclimate

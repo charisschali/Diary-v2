@@ -1,7 +1,7 @@
 from datetime import datetime, date
 from flask_restful import Resource, reqparse
-from flask_jwt_extended import (get_jwt_identity, jwt_required)
-from app.models import Entry
+from app.models import Entry, User
+from app.security import token_required, encode_auth_token
 
 
 class Entries(Resource):
@@ -23,15 +23,15 @@ class Entries(Resource):
                                  type=str, required=True,
                                  help="Content is required"
                                 )
-    @jwt_required
-    def post(self):
+    @token_required
+    def post(self, user_id):
         """
         Method: POST
         Creates a new Entry for logged in users
         URL path: mydiary/v1/entries
         """
         data = self.parser.parse_args()
-        user_id = get_jwt_identity()[0]
+        user_id = user_id[0]
         date = self.date
         title = data['title']
         content = data['content']
@@ -40,20 +40,21 @@ class Entries(Resource):
             return{'message':"Title already exist, use a different one."}, 400
         else:
             try:
-                return{'message':"successfully added","This entry was added to your diary":Entry().save(entry)}, 201
+                return{"message":Entry().save(entry)}, 201
             except:
                 return{'message':"An error occured try again"}, 500
 
     @staticmethod
-    @jwt_required
-    def get():
+    @token_required
+    def get(user_id):
         """
         Method: GET
         Get all entries of a user
         URL path: mydiary/v1/entries
-        """
-        user_id = get_jwt_identity()[0]
+        # """
+        user_id = user_id[0]
         entries = Entry().get_all_entries(user_id)
+        print(entries)
         if len(entries) == 0:
             return {"message":"Your diary is empty"}, 200
         else:
@@ -66,7 +67,7 @@ class Entries(Resource):
                 single_entry["title"] = user_entries[2]
                 single_entry["content"] = user_entries[3]
                 all_user_entries.append(single_entry)
-                response = {"all_entries":all_user_entries}
+                response = {"message":all_user_entries}
             return response, 200
 
 class EntryList(Resource):
@@ -92,43 +93,49 @@ class EntryList(Resource):
                                 )
 
     @staticmethod
-    @jwt_required
-    def get(entryId):
+    @token_required
+    def get(user_id, entryId):
         """
         Gets an entry using its id
         """
-        user_id = get_jwt_identity()[0]
+        user_id = user_id[0]
         entry = Entry().get_by_id(entryId, user_id)
         if entry:
-            return {"Entry fetched Successuflly":entry[0]}, 200
+            return {"message":entry[0]}, 200
         return {'Message':"Entry requested does not exist"}, 404
 
     @staticmethod
-    @jwt_required
-    def delete(entryId):
+    @token_required
+    def delete(user_id, entryId):
         """
         Method: DELETE
         Deletes an entry by it's Id
         URL path: mydiary/v1/entries/<int:entryId>
         """
+        user_id = user_id[0]
         try:
             entry_id = Entry().get_entry_id(entryId)
             if entry_id is None:
                 return {'message':"Entry does not exist"}, 404
-            else:
+            owner = Entry().verify_entry_owner(entryId, user_id)
+            if owner:
                 Entry().delete_entry(entryId)
-            return {'message':'Your entry was successfully deleted'}, 200
-        except:
-            return{"message":"An internal error occured"}, 500
+                return {'message':'Your entry was successfully deleted'}, 200
+            else:
+                return{"message":"You  are not allowed to delete this entry"}, 403
 
-    @jwt_required
-    def put(self, entryId):
+        except:
+            return{"message":"An error occured while processing your request."}, 500
+
+    @token_required
+    def put(self, user_id, entryId):
         """
         Method: PUT
         Modifies an entry by it's Id
         URL path: mydiary/v1/entries/<int:entryId>
         """
-        user_id = get_jwt_identity()[0]
+        user_id = user_id[0]
+        owner = Entry().verify_entry_owner(entryId, user_id)
         data = self.parser.parse_args()
         title = data['title']
         content = data['content']
@@ -142,11 +149,12 @@ class EntryList(Resource):
             if today_date == entry_Date:
                 if Entry().verify_title(title, user_id) == True:
                     return{'message':"Title already exist, use a different one."}, 400
-                else:
+                if owner:
                     Entry().update_entry(updated_data, entryId)
                     return{"message":"Entry Updated successfully"}, 200
+                else:
+                    return{"message":"You are not allowed to update this entry"}, 403
             else:
-                return{'message':'Entry cannot be updated \
-                 because it was not created today'}, 400
+                return{'message':'Entry cannot be updated because it was not created today'}, 400
 
-        return{"message":"An error ocurred while processing your request"}, 500
+

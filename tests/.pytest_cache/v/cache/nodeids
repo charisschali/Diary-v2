@@ -1,8 +1,0 @@
-[
-  "test_auth_resources.py::Test_Auth_Endpoints::test_sing_with_incorrect_password",
-  "test_auth_resources.py::Test_Auth_Endpoints::test_singin_endpoint",
-  "test_auth_resources.py::Test_Auth_Endpoints::test_singin_with_unexisting_email",
-  "test_auth_resources.py::Test_Auth_Endpoints::test_singup_endpoint",
-  "test_auth_resources.py::Test_Auth_Endpoints::test_singup_with_existing_email",
-  "test_auth_resources.py::Test_Auth_Endpoints::test_singup_with_unmatched_password"
-]

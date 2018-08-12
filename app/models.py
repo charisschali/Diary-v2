@@ -129,6 +129,7 @@ class User():
         except:
             conn.rollback()
 
+
 class Entry():
     """
     This class will store diary entries
@@ -247,3 +248,11 @@ class Entry():
             return False
         except:
             conn.rollback()
+    @staticmethod
+    def verify_entry_owner(id,user_id):
+        user = cur.execute("select * from entries where id = %s and user_id = %s", (id,user_id))
+        user = cur.fetchone()
+        if user:
+            return True
+        else:
+            return False

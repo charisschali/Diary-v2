@@ -26,7 +26,7 @@ class Test_Auth_Endpoints(unittest.TestCase):
 
         self.user = {
             'email':'test11e1@camp.com',
-            'password':'test111',
+            'password':'test1111',
             }
         self.user2 = {
             'email':'test11e1@camp.com',

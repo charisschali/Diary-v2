@@ -1,5 +1,10 @@
+*.pytest_cache
 */__pycache__
-ven
-/ven
-.vscode
+*.pyc
+.coverage
+ven/
 .env
+ven/
+venv/
+.vscode
+
