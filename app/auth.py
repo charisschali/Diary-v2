@@ -69,6 +69,5 @@ class Login(Resource):
         if User().verify_password(email, password):
             user_id = User().get_id_by_email(email)
             access_token = encode_auth_token(user_id)
-            print(access_token)
             return {"message":"you logged in successfully","token":access_token}, 200
         return {"message":"Your password was Incorrect, please double check it."}, 400
